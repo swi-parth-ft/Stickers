@@ -6,12 +6,18 @@
 //
 
 import SwiftUI
-
+import SwiftData
 @main
+
+
 struct StickersApp: App {
+    
+   
     var body: some Scene {
         WindowGroup {
             ContentView()
         }
+     
+        
     }
 }

@@ -6,20 +6,85 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		08CFDA512D0B0D55008AAEA1 /* Share.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 08CFDA472D0B0D55008AAEA1 /* Share.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		08CFDA4F2D0B0D55008AAEA1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08CFDA292D0B07E4008AAEA1 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 08CFDA462D0B0D55008AAEA1;
+			remoteInfo = Share;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		08CFDA562D0B0D55008AAEA1 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				08CFDA512D0B0D55008AAEA1 /* Share.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		08CFDA312D0B07E4008AAEA1 /* Stickers.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Stickers.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		08CFDA472D0B0D55008AAEA1 /* Share.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = Share.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		08CFDA522D0B0D55008AAEA1 /* Exceptions for "Share" folder in "Share" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 08CFDA462D0B0D55008AAEA1 /* Share */;
+		};
+		08CFDA5C2D0B196A008AAEA1 /* Exceptions for "Stickers" folder in "Share" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				SharedItem.swift,
+				ShareExtensionManager.swift,
+			);
+			target = 08CFDA462D0B0D55008AAEA1 /* Share */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		08CFDA332D0B07E4008AAEA1 /* Stickers */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				08CFDA5C2D0B196A008AAEA1 /* Exceptions for "Stickers" folder in "Share" target */,
+			);
 			path = Stickers;
+			sourceTree = "<group>";
+		};
+		08CFDA482D0B0D55008AAEA1 /* Share */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				08CFDA522D0B0D55008AAEA1 /* Exceptions for "Share" folder in "Share" target */,
+			);
+			path = Share;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		08CFDA2E2D0B07E4008AAEA1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		08CFDA442D0B0D55008AAEA1 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -33,6 +98,7 @@
 			isa = PBXGroup;
 			children = (
 				08CFDA332D0B07E4008AAEA1 /* Stickers */,
+				08CFDA482D0B0D55008AAEA1 /* Share */,
 				08CFDA322D0B07E4008AAEA1 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -41,6 +107,7 @@
 			isa = PBXGroup;
 			children = (
 				08CFDA312D0B07E4008AAEA1 /* Stickers.app */,
+				08CFDA472D0B0D55008AAEA1 /* Share.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -55,10 +122,12 @@
 				08CFDA2D2D0B07E4008AAEA1 /* Sources */,
 				08CFDA2E2D0B07E4008AAEA1 /* Frameworks */,
 				08CFDA2F2D0B07E4008AAEA1 /* Resources */,
+				08CFDA562D0B0D55008AAEA1 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				08CFDA502D0B0D55008AAEA1 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				08CFDA332D0B07E4008AAEA1 /* Stickers */,
@@ -69,6 +138,28 @@
 			productName = Stickers;
 			productReference = 08CFDA312D0B07E4008AAEA1 /* Stickers.app */;
 			productType = "com.apple.product-type.application";
+		};
+		08CFDA462D0B0D55008AAEA1 /* Share */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 08CFDA532D0B0D55008AAEA1 /* Build configuration list for PBXNativeTarget "Share" */;
+			buildPhases = (
+				08CFDA432D0B0D55008AAEA1 /* Sources */,
+				08CFDA442D0B0D55008AAEA1 /* Frameworks */,
+				08CFDA452D0B0D55008AAEA1 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				08CFDA482D0B0D55008AAEA1 /* Share */,
+			);
+			name = Share;
+			packageProductDependencies = (
+			);
+			productName = Share;
+			productReference = 08CFDA472D0B0D55008AAEA1 /* Share.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -81,6 +172,9 @@
 				LastUpgradeCheck = 1620;
 				TargetAttributes = {
 					08CFDA302D0B07E4008AAEA1 = {
+						CreatedOnToolsVersion = 16.2;
+					};
+					08CFDA462D0B0D55008AAEA1 = {
 						CreatedOnToolsVersion = 16.2;
 					};
 				};
@@ -100,12 +194,20 @@
 			projectRoot = "";
 			targets = (
 				08CFDA302D0B07E4008AAEA1 /* Stickers */,
+				08CFDA462D0B0D55008AAEA1 /* Share */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		08CFDA2F2D0B07E4008AAEA1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		08CFDA452D0B0D55008AAEA1 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -122,7 +224,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		08CFDA432D0B0D55008AAEA1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		08CFDA502D0B0D55008AAEA1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 08CFDA462D0B0D55008AAEA1 /* Share */;
+			targetProxy = 08CFDA4F2D0B0D55008AAEA1 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		08CFDA3E2D0B07E4008AAEA1 /* Debug */ = {
@@ -317,6 +434,65 @@
 			};
 			name = Release;
 		};
+		08CFDA542D0B0D55008AAEA1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Share/Share.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = P5K444356C;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Share/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Share;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "allow access to use the app";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.parthant.Stickers.Share;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		08CFDA552D0B0D55008AAEA1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Share/Share.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = P5K444356C;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Share/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Share;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "allow access to use the app";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.parthant.Stickers.Share;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -334,6 +510,15 @@
 			buildConfigurations = (
 				08CFDA412D0B07E4008AAEA1 /* Debug */,
 				08CFDA422D0B07E4008AAEA1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		08CFDA532D0B0D55008AAEA1 /* Build configuration list for PBXNativeTarget "Share" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				08CFDA542D0B0D55008AAEA1 /* Debug */,
+				08CFDA552D0B0D55008AAEA1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
