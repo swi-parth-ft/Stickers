@@ -48,11 +48,11 @@ class SharedItemManager: ObservableObject {
     }
 
 
-    func saveItem(content: SharedContent) {
+    func saveItem(content: SharedContent, caption: String) {
         guard let container = container else { return }
         let context = container.mainContext
         
-        let newItem = SharedItem(content: content)
+        let newItem = SharedItem(content: content, caption: caption)
         context.insert(newItem)
         
         do {

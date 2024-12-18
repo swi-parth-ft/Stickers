@@ -1,50 +1,57 @@
 import SwiftUI
 import SwiftData
 
+import SwiftUI
+
 struct ContentView: View {
     @StateObject private var manager = SharedItemManager()
+    @State private var selectedTab: Tab = .url // Default to .text tab
     
     var body: some View {
-        VStack {
-            List(manager.items, id: \.id) { item in
-                VStack(alignment: .leading) {
-                    if let content = item.decodedContent() {
-                        switch content {
-                        case .text(let text):
-                            Text(text)
-                                .font(.headline)
-                        case .image(let imageData):
-                            if let uiImage = UIImage(data: imageData) {
-                                Image(uiImage: uiImage)
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(height: 100)
-                            }
-                        case .url(let url):
-                            Link(url.absoluteString, destination: url)
-                                .font(.headline)
-                        }
-                    } else {
-                        Text("No content available")
-                            .font(.headline)
-                    }
-                    
-                    Text(item.timestamp, style: .date)
-                        .font(.subheadline)
+        TabView(selection: $selectedTab) {
+            
+            HomeView()
+                .tabItem {
+                    Image(systemName: "house")
+                    Text("home")
                 }
-            }
-            Button("Add Item") {
-                // Example: Saving a new text item
-                manager.saveItem(content: .text("New Shared Item"))
-            }
-            .padding()
+                .tag(Tab.home)
+               
+            
+            SharedTextView(manager: manager, selectedTab: $selectedTab)
+                .tabItem {
+                    Image(systemName: "text.alignleft")
+                    Text("Text")
+                }
+                .tag(Tab.text)
+            
+            PhotosView(manager: manager, selectedTab: $selectedTab)
+                .tabItem {
+                    Image(systemName: "photo.fill")
+                    Text("Images")
+                }
+                .tag(Tab.image)
+            
+            LinksView(manager: manager, selectedTab: $selectedTab)
+                .tabItem {
+                    Image(systemName: "link")
+                    Text("URLs")
+                }
+                .tag(Tab.url)
         }
         .onAppear {
             manager.fetchItems() // Fetch items when the view appears
         }
+       
     }
 }
 
+enum Tab {
+    case home
+    case text
+    case image
+    case url
+}
 #Preview {
     ContentView()
 }

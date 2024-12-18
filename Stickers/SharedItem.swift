@@ -14,11 +14,12 @@ class SharedItem {
     var id: UUID
     var content: Data?  // Store the serialized content as Data
     var timestamp: Date
-    
+    var caption: String?
     // Custom initializer
-    init(id: UUID = UUID(), content: SharedContent? = nil, timestamp: Date = Date()) {
+    init(id: UUID = UUID(), content: SharedContent? = nil, timestamp: Date = Date(), caption: String? = nil) {
         self.id = id
         self.timestamp = timestamp
+        self.caption = caption
         if let content = content {
             self.content = try? JSONEncoder().encode(content) // Encode the SharedContent to Data
         }
