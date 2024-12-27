@@ -1,28 +1,26 @@
 import SwiftUI
-import UniformTypeIdentifiers
-
 
 struct ShareExtensionView: View {
     @State private var text: String
-    @State private var image: UIImage?
+    @State private var imageFileURL: URL?
     @State private var url: URL?
     @StateObject private var manager = SharedItemManager()
     @State private var caption: String = ""
     
-    init(text: String, image: UIImage?, url: URL?) {
+    init(text: String, imageFileURL: URL?, url: URL?) {
         _text = State(initialValue: text)
-        _image = State(initialValue: image)
+        _imageFileURL = State(initialValue: imageFileURL)
         _url = State(initialValue: url)
     }
     
     func close() {
         NotificationCenter.default.post(name: NSNotification.Name("close"), object: nil)
     }
-
+    
     var body: some View {
         NavigationStack {
             VStack(spacing: 20) {
-                if let image = image {
+                if let imageFileURL = imageFileURL, let image = UIImage(contentsOfFile: imageFileURL.path) {
                     Image(uiImage: image)
                         .resizable()
                         .scaledToFit()
@@ -56,12 +54,9 @@ struct ShareExtensionView: View {
                 }
                 
                 Button {
-                    if let image = image {
-                        if let imageData = image.pngData() {
-                            let imageContent = SharedContent.image(imageData)
-                            manager.saveItem(content: imageContent, caption: caption)
-                        }
-                        
+                    if let imageFileURL = imageFileURL {
+                        let imageContent = SharedContent.imageURL(imageFileURL)
+                        manager.saveItem(content: imageContent, caption: caption)
                     } else if let url = url {
                         let urlContent = SharedContent.url(url)
                         manager.saveItem(content: urlContent, caption: caption)
