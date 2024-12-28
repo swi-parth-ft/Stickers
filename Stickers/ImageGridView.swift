@@ -17,11 +17,14 @@ struct ImageGridView: View {
     @StateObject private var manager = SharedItemManager()
     @State private var thumbnails: [URL] = []
     @State private var gridSize: CGFloat = 100 // Initial grid item size
-    @State private var selectedImageURL: URL? // For full-screen viewing
+    
     @GestureState private var pinchScale: CGFloat = 1.0 // Scale state for pinch gesture
+    @GestureState private var isPinching: Bool = false  // Flag to detect active pinching
+    
+    @Namespace private var transitionNamespace // Namespace for the zoom transition
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             GeometryReader { geometry in
                 ScrollView {
                     // Calculate number of columns dynamically based on available width
@@ -34,35 +37,45 @@ struct ImageGridView: View {
                         columns: Array(repeating: GridItem(.fixed(columnWidth), spacing: spacing), count: columns),
                         spacing: spacing
                     ) {
-                        ForEach(thumbnails, id: \.self) { url in
-                            ImageThumbnailView(imageURL: url, gridSize: columnWidth)
-                                .onTapGesture {
-                                    selectedImageURL = manager.getFullImageURL(for: url)
-                                }
+                        ForEach(thumbnails, id: \.self) { thumbnailURL in
+                            NavigationLink {
+                                FullScreenImageView(
+                                    imageURL: manager.getFullImageURL(for: thumbnailURL),
+                                    namespace: transitionNamespace
+                                )
+                                .navigationTransition(.zoom(sourceID: thumbnailURL, in: transitionNamespace))
+                            } label: {
+                                ImageThumbnailView(imageURL: thumbnailURL, gridSize: columnWidth)
+                                    .matchedTransitionSource(id: thumbnailURL, in: transitionNamespace)
+                            }
+                            // Disable tapping on NavigationLink if pinch is in progress:
+                            .disabled(isPinching)
                         }
                     }
-                    .padding(spacing) // Add padding around the grid
-                    .background(Color.white) // Match iOS Photos app background
-                    .gesture(
-                        MagnificationGesture()
+                    .padding(spacing)       // Add padding around the grid
+                    .background(Color.white)
+                    // Use a highPriorityGesture to ensure pinch takes precedence over taps:
+                    .highPriorityGesture(
+                        MagnificationGesture(minimumScaleDelta: 0.02)  // Adjust threshold as needed
+                            .updating($isPinching) { _, state, _ in
+                                // As soon as we detect a pinch, set isPinching to true
+                                state = true
+                            }
                             .updating($pinchScale) { currentState, gestureState, _ in
                                 gestureState = currentState
                             }
                             .onEnded { finalScale in
-                                let newSize = gridSize * finalScale
-                                gridSize = max(50, min(300, newSize))
+                                withAnimation(.easeInOut) {
+                                    let newSize = gridSize * finalScale
+                                    gridSize = max(50, min(300, newSize))
+                                }
                             }
                     )
-                    .scaleEffect(pinchScale)
-                    .animation(.easeInOut, value: gridSize)
                 }
-                .navigationTitle("Saved Images")
-                .onAppear {
-                    thumbnails = manager.fetchThumbnails()
-                }
-                .fullScreenCover(item: $selectedImageURL) { url in
-                               FullScreenImageView(imageURL: url)
-                           }
+            }
+            .navigationTitle("Saved Images")
+            .onAppear {
+                thumbnails = manager.fetchThumbnails()
             }
         }
     }
