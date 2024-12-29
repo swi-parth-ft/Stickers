@@ -27,38 +27,20 @@ struct ImageGridView: View {
         NavigationStack {
             GeometryReader { geometry in
                 ScrollView {
-                    // Calculate number of columns dynamically based on available width
-                    let columns = Int(geometry.size.width / gridSize)
-                    let spacing: CGFloat = 2 // Tiny white space between images
-                    let totalSpacing = CGFloat(columns - 1) * spacing
-                    let columnWidth = (geometry.size.width - totalSpacing) / CGFloat(columns)
+                    // Use a helper function to calculate grid configuration
+                    let gridItems = createGridItems(for: geometry.size.width, gridSize: gridSize)
 
-                    LazyVGrid(
-                        columns: Array(repeating: GridItem(.fixed(columnWidth), spacing: spacing), count: columns),
-                        spacing: spacing
-                    ) {
+                    LazyVGrid(columns: gridItems, spacing: 2) {
                         ForEach(thumbnails, id: \.self) { thumbnailURL in
-                            NavigationLink {
-                                FullScreenImageView(
-                                    imageURL: manager.getFullImageURL(for: thumbnailURL),
-                                    namespace: transitionNamespace
-                                )
-                                .navigationTransition(.zoom(sourceID: thumbnailURL, in: transitionNamespace))
-                            } label: {
-                                ImageThumbnailView(imageURL: thumbnailURL, gridSize: columnWidth)
-                                    .matchedTransitionSource(id: thumbnailURL, in: transitionNamespace)
-                            }
-                            // Disable tapping on NavigationLink if pinch is in progress:
-                            .disabled(isPinching)
+                            buildThumbnailView(thumbnailURL: thumbnailURL)
                         }
                     }
-                    .padding(spacing)       // Add padding around the grid
+                    .padding(2)       // Add padding around the grid
                     .background(Color.white)
                     // Use a highPriorityGesture to ensure pinch takes precedence over taps:
                     .highPriorityGesture(
                         MagnificationGesture(minimumScaleDelta: 0.02)  // Adjust threshold as needed
                             .updating($isPinching) { _, state, _ in
-                                // As soon as we detect a pinch, set isPinching to true
                                 state = true
                             }
                             .updating($pinchScale) { currentState, gestureState, _ in
@@ -78,5 +60,28 @@ struct ImageGridView: View {
                 thumbnails = manager.fetchThumbnails()
             }
         }
+    }
+
+    // Helper function to calculate grid items
+    private func createGridItems(for width: CGFloat, gridSize: CGFloat) -> [GridItem] {
+        let columns = Int(width / gridSize)
+        let spacing: CGFloat = 2
+        return Array(repeating: GridItem(.fixed(gridSize), spacing: spacing), count: columns)
+    }
+
+    // Helper function to build thumbnail view
+    private func buildThumbnailView(thumbnailURL: URL) -> some View {
+        NavigationLink {
+            FullScreenImageView(
+                imageURLs: thumbnails.map { manager.getFullImageURL(for: $0)! }, // Get full-resolution URLs
+                selectedIndex: thumbnails.firstIndex(of: thumbnailURL) ?? 0,    // Start at the tapped image
+                namespace: transitionNamespace
+            )
+            .navigationTransition(.zoom(sourceID: thumbnailURL, in: transitionNamespace))
+        } label: {
+            ImageThumbnailView(imageURL: thumbnailURL, gridSize: gridSize)
+                .matchedTransitionSource(id: thumbnailURL, in: transitionNamespace)
+        }
+        .disabled(isPinching)
     }
 }
