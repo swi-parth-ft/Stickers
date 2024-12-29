@@ -17,7 +17,7 @@ class SharedItemManager: ObservableObject {
 
     init() {
         let sharedDefaults = UserDefaults(suiteName: "group.com.parthant.Stickers")
-            self.categories = sharedDefaults?.array(forKey: "categories") as? [String] ?? ["General", "Work", "Personal", "Important"]
+            self.categories = sharedDefaults?.array(forKey: "categories") as? [String] ?? ["Screenshots", "General", "Work", "Personal", "Important"]
             initializeModelContainer()
             fetchItems()
         

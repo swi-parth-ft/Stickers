@@ -36,6 +36,10 @@ struct ShareExtensionView: View {
                 DispatchQueue.main.async {
                     self.imageCategory = "\(topResult.identifier) (\(Int(topResult.confidence * 100))%)"
                     print("Category: \(topResult.identifier), Confidence: \(Int(topResult.confidence * 100))%")
+                    if topResult.identifier == "document" {
+                        self.imageCategory = "Screenshots"
+                        manager.selectedCategory = "Screenshots"
+                    }
                 }
             } else {
                 DispatchQueue.main.async {
