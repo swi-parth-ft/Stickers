@@ -22,7 +22,7 @@ struct ImageGridView: View {
     @GestureState private var isPinching: Bool = false  // Flag to detect active pinching
     
     @Namespace private var transitionNamespace // Namespace for the zoom transition
-
+    let selectedCategory: String
     var body: some View {
         NavigationStack {
             GeometryReader { geometry in
@@ -57,7 +57,7 @@ struct ImageGridView: View {
             }
             .navigationTitle("Saved Images")
             .onAppear {
-                thumbnails = manager.fetchThumbnails()
+                thumbnails = manager.fetchThumbnails(for: selectedCategory)
             }
         }
     }

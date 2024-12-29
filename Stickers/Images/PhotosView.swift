@@ -12,7 +12,7 @@ struct PhotosView: View {
         @Binding var selectedTab: Tab
         
         var body: some View {
-            ImageGridView()
+            CategoryListView()
 //            List(manager.items.filter { item in
 //                if let content = item.decodedContent() {
 //                    switch content {

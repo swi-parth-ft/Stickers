@@ -1,4 +1,6 @@
 import SwiftUI
+import Vision
+import CoreML
 
 struct ShareExtensionView: View {
     @State private var text: String
@@ -6,6 +8,9 @@ struct ShareExtensionView: View {
     @State private var url: URL?
     @StateObject private var manager = SharedItemManager()
     @State private var caption: String = ""
+    @State private var imageCategory: String?
+    @State private var newCategory: String = "" // To store the new category input
+
     
     init(text: String, imageFileURL: URL?, url: URL?) {
         _text = State(initialValue: text)
@@ -17,6 +22,47 @@ struct ShareExtensionView: View {
         NotificationCenter.default.post(name: NSNotification.Name("close"), object: nil)
     }
     
+    func classifyImage(_ image: UIImage) {
+        // Resize the image to reduce memory usage
+        guard let resizedImage = resizeImage(image, targetSize: CGSize(width: 224, height: 224)),
+              let ciImage = CIImage(image: resizedImage) else {
+            print("Unable to create CIImage or resize image.")
+            return
+        }
+        
+        let request = VNClassifyImageRequest { request, error in
+            if let results = request.results as? [VNClassificationObservation], !results.isEmpty {
+                let topResult = results.first!
+                DispatchQueue.main.async {
+                    self.imageCategory = "\(topResult.identifier) (\(Int(topResult.confidence * 100))%)"
+                    print("Category: \(topResult.identifier), Confidence: \(Int(topResult.confidence * 100))%")
+                }
+            } else {
+                DispatchQueue.main.async {
+                    self.imageCategory = "Unknown"
+                    print("Unable to classify image.")
+                }
+            }
+        }
+        
+        let handler = VNImageRequestHandler(ciImage: ciImage, options: [:])
+        DispatchQueue.global(qos: .userInitiated).async {
+            do {
+                try handler.perform([request])
+            } catch {
+                print("Failed to perform Vision request: \(error.localizedDescription)")
+            }
+        }
+    }
+
+    // Helper function to resize the image
+    func resizeImage(_ image: UIImage, targetSize: CGSize) -> UIImage? {
+        let renderer = UIGraphicsImageRenderer(size: targetSize)
+        return renderer.image { _ in
+            image.draw(in: CGRect(origin: .zero, size: targetSize))
+        }
+    }
+    
     var body: some View {
         NavigationStack {
             VStack(spacing: 20) {
@@ -26,6 +72,9 @@ struct ShareExtensionView: View {
                         .scaledToFit()
                         .frame(height: 200)
                         .padding()
+                        .onAppear {
+                            classifyImage(image)
+                        }
                     
                     TextField("Caption", text: $caption)
                         .lineLimit(3...6)
@@ -52,7 +101,29 @@ struct ShareExtensionView: View {
                         .textFieldStyle(.roundedBorder)
                         .padding()
                 }
-                
+                Picker("Select Category", selection: $manager.selectedCategory) {
+                                    ForEach(manager.categories, id: \.self) { category in
+                                        Text(category).tag(category as String?)
+                                    }
+                                }
+                                .pickerStyle(MenuPickerStyle())
+                                .padding()
+
+                                // Add New Category
+                                HStack {
+                                    TextField("New Category", text: $newCategory)
+                                        .textFieldStyle(.roundedBorder)
+
+                                    Button("Add") {
+                                        if !newCategory.isEmpty {
+                                            manager.addCategory(newCategory)
+                                            manager.selectedCategory = newCategory
+                                            newCategory = ""
+                                        }
+                                    }
+                                    .buttonStyle(.bordered)
+                                }
+                                .padding()
                 Button {
                     if let imageFileURL = imageFileURL {
                         let imageContent = SharedContent.imageURL(imageFileURL)

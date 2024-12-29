@@ -108,7 +108,7 @@ class ShareViewController: UIViewController {
 
         let fullImageURL = containerURL.appendingPathComponent(fileName)
         let thumbnailURL = containerURL.appendingPathComponent("thumbnail_\(fileName)")
-
+        
         do {
             try fileManager.copyItem(at: url, to: fullImageURL) // Save the full image directly
             

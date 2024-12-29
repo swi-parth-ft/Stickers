@@ -30,13 +30,13 @@ struct FullScreenImageView: View {
                 ForEach(imageURLs.indices, id: \.self) { index in
                     GeometryReader { geometry in
                         if let image = UIImage(contentsOfFile: imageURLs[index].path) {
+                            
                             Image(uiImage: image)
                                 .resizable()
                                 .scaledToFit()
                                 .padding(isZoomed ? 0 : 20) // Add padding if not zoomed
                                 .frame(width: geometry.size.width, height: geometry.size.height)
                                 .cornerRadius(isZoomed ? 0 : 22)
-                               
                                 .shadow(radius: 10)
                                 .onTapGesture {
                                     withAnimation(.easeInOut) {
