@@ -11,14 +11,17 @@ struct LinksView: View {
     @StateObject var manager: SharedItemManager
     @Binding var selectedTab: Tab
     @State private var selectedProvider: String = "All"
+    let cat: String
+    
     // Grid layout: 2 columns with adaptive width
     
     var filteredLinks: [SharedItem] {
         manager.items.filter { item in
             if let content = item.decodedContent(), case .url(let url) = content {
                 let category = categorizeLink(url: url)
-                return selectedProvider == "All" || category == selectedProvider
+                return (selectedProvider == "All" || category == selectedProvider) && item.category == cat
             }
+            
             return false
         }
     }
@@ -28,6 +31,7 @@ struct LinksView: View {
             if let content = item.decodedContent(), case .url(let url) = content {
                 return categorizeLink(url: url) // Categorize URL
             }
+            
             return "Other"
         }
     }
@@ -65,25 +69,29 @@ struct LinksView: View {
                 .padding(.horizontal, 8)
             }
             .navigationTitle("\(selectedProvider) Links")
-
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Menu {
                         Button("All") {
                             selectedProvider = "All"
                         }
+                        
                         Button("Threads") {
                             selectedProvider = "Threads"
                         }
+                        
                         Button("Twitter") {
                             selectedProvider = "Twitter"
                         }
+                        
                         Button("Instagram") {
                             selectedProvider = "Instagram"
                         }
+                        
                         Button("Web") {
                             selectedProvider = "Web"
                         }
+                        
                     } label: {
                         Label("Filter", systemImage: "line.3.horizontal.decrease.circle")
                     }
@@ -121,5 +129,5 @@ struct MissingLinkPreviewView: View {
 }
 
 #Preview {
-    LinksView(manager: SharedItemManager(), selectedTab: .constant(.url))
+    LinksView(manager: SharedItemManager(), selectedTab: .constant(.url), cat: "general")
 }

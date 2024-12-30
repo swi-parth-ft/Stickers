@@ -5,7 +5,7 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject private var manager = SharedItemManager()
-    @State private var selectedTab: Tab = .url // Default to .text tab
+    @State private var selectedTab: Tab = .image // Default to .text tab
     
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -32,7 +32,7 @@ struct ContentView: View {
                 }
                 .tag(Tab.image)
             
-            LinksView(manager: manager, selectedTab: $selectedTab)
+            LinkCategoryView(selectedTab: $selectedTab)
                 .tabItem {
                     Image(systemName: "link")
                     Text("URLs")
