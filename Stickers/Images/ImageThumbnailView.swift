@@ -20,7 +20,7 @@ struct ImageThumbnailView: View {
     let gridSize: CGFloat
 
     @State private var image: UIImage?
-
+    @StateObject private var manager = SharedItemManager()
     var body: some View {
         Group {
             if let image = image {
@@ -31,6 +31,13 @@ struct ImageThumbnailView: View {
                     .cornerRadius(8)
                     .shadow(radius: 4)
                     .clipped()
+//                    .contextMenu { // Add a context menu for deletion
+//                                            Button(role: .destructive) {
+//                                                manager.deleteImage(at: imageURL)
+//                                            } label: {
+//                                                Label("Delete", systemImage: "trash")
+//                                            }
+//                                        }
             } else {
                 Color.gray
                     .frame(width: gridSize, height: gridSize)

@@ -26,16 +26,6 @@ struct LinksView: View {
         }
     }
     
-    var categorizedLinks: [String: [SharedItem]] {
-        Dictionary(grouping: filteredLinks) { item in
-            if let content = item.decodedContent(), case .url(let url) = content {
-                return categorizeLink(url: url) // Categorize URL
-            }
-            
-            return "Other"
-        }
-    }
-
     func categorizeLink(url: URL) -> String {
         let host = url.host?.lowercased() ?? ""
         
@@ -50,7 +40,6 @@ struct LinksView: View {
         }
     }
     
-    
     private let columns = [
         GridItem(.flexible()),
         GridItem(.flexible())
@@ -63,6 +52,20 @@ struct LinksView: View {
                     ForEach(filteredLinks, id: \.id) { item in
                         if let content = item.decodedContent(), case .url(let url) = content {
                             LinkPreviewView(url: url, caption: item.caption ?? "")
+                                .contextMenu {
+                                    Button(role: .destructive) {
+                                        manager.deleteItem(item)
+                                    } label: {
+                                        Label("Delete", systemImage: "trash")
+                                    }
+                                }
+                                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                    Button(role: .destructive) {
+                                        manager.deleteItem(item)
+                                    } label: {
+                                        Label("Delete", systemImage: "trash")
+                                    }
+                                }
                         }
                     }
                 }
@@ -99,35 +102,4 @@ struct LinksView: View {
             }
         }
     }
-}
-
-struct MissingLinkPreviewView: View {
-    var body: some View {
-        VStack {
-            Rectangle()
-                .fill(Color.gray.opacity(0.2))
-                .frame(height: 100)
-                .cornerRadius(8)
-                .overlay(
-                    Image(systemName: "link")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 40, height: 40)
-                        .foregroundColor(.gray)
-                )
-            
-            Text("Link Preview Unavailable")
-                .font(.footnote)
-                .foregroundColor(.secondary)
-                .padding(.top, 4)
-        }
-        .frame(maxHeight: 200)
-        .background(Color(UIColor.secondarySystemBackground))
-        .cornerRadius(12)
-        .shadow(radius: 2)
-    }
-}
-
-#Preview {
-    LinksView(manager: SharedItemManager(), selectedTab: .constant(.url), cat: "general")
 }

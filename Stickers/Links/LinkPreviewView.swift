@@ -5,7 +5,6 @@
 //  Created by Parth Antala on 2024-12-18.
 //
 
-
 import SwiftUI
 import LinkPresentation
 
@@ -21,7 +20,6 @@ struct LinkPreviewView: View {
             VStack(alignment: .leading, spacing: 8) {
                 // Show Preview Image if Available
                 ZStack(alignment: .topTrailing) {
-                    
                     ZStack {
                         if let imageProvider = metadata?.imageProvider {
                             LinkPreviewImageView(imageProvider: imageProvider)
@@ -61,7 +59,6 @@ struct LinkPreviewView: View {
                                 .padding(8)
                         }
                     }
-                        
                 }
                 
                 // Title and URL Details

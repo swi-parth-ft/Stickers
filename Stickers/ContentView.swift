@@ -25,7 +25,7 @@ struct ContentView: View {
                 }
                 .tag(Tab.text)
             
-            PhotosView(manager: manager, selectedTab: $selectedTab)
+            CategoryListView()
                 .tabItem {
                     Image(systemName: "photo.fill")
                     Text("Images")

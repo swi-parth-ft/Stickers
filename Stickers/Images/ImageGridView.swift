@@ -81,6 +81,14 @@ struct ImageGridView: View {
         } label: {
             ImageThumbnailView(imageURL: thumbnailURL, gridSize: gridSize)
                 .matchedTransitionSource(id: thumbnailURL, in: transitionNamespace)
+                .contextMenu {
+                                    Button(role: .destructive) {
+                                        manager.deleteImage(at: thumbnailURL)
+                                        thumbnails = manager.fetchThumbnails(for: selectedCategory)
+                                    } label: {
+                                        Label("Delete", systemImage: "trash")
+                                    }
+                                }
         }
         .disabled(isPinching)
     }

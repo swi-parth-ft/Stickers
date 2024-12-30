@@ -5,8 +5,9 @@ import Foundation
 @MainActor
 class SharedItemManager: ObservableObject {
     private var container: ModelContainer?
-
+    @Published var thumbnails: [URL] = []
     @Published var items: [SharedItem] = []
+    @Published var gridSize: CGFloat = 100
     @Published var categories: [String] {
         didSet {
             let sharedDefaults = UserDefaults(suiteName: "group.com.parthant.Stickers")
@@ -24,6 +25,11 @@ class SharedItemManager: ObservableObject {
     fetchItems()
     }
 
+    private func saveCategoriesToUserDefaults() {
+            let sharedDefaults = UserDefaults(suiteName: "group.com.parthant.Stickers")
+            sharedDefaults?.set(categories, forKey: "categories")
+        }
+    
     func initializeModelContainer() {
         do {
             let schema = Schema([SharedItem.self])
@@ -74,54 +80,42 @@ class SharedItemManager: ObservableObject {
             return []
         }
     }
+    
     func fetchThumbnails(for category: String) -> [URL] {
-        guard let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.parthant.Stickers") else {
-            print("Error accessing shared container")
-            return []
-        }
-        
-        do {
-            // Fetch all thumbnails in the shared container
-            let fileURLs = try FileManager.default.contentsOfDirectory(at: containerURL, includingPropertiesForKeys: nil)
-            let thumbnails = fileURLs.filter { $0.lastPathComponent.hasPrefix("thumbnail_") }
-            
-            // Filter thumbnails that belong to the specified category
-            let categoryThumbnails = items.compactMap { item -> URL? in
-                guard let contentData = item.content, // Ensure content is not nil
-                      let sharedContent = try? JSONDecoder().decode(SharedContent.self, from: contentData), // Decode content
-                      item.category == category else {
-                    return nil
-                }
-                
-                // Handle different content cases
-                switch sharedContent {
-                case .imageURL(let imageURL), .url(let imageURL): // Handle both .imageURL and .url cases
-                    let thumbnailName = "thumbnail_" + imageURL.lastPathComponent
-                    return thumbnails.first(where: { $0.lastPathComponent == thumbnailName })
-                default:
-                    return nil
-                }
+            guard let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.parthant.Stickers") else {
+                print("Error accessing shared container")
+                return []
             }
             
-            return categoryThumbnails
-        } catch {
-            print("Failed to fetch thumbnails: \(error)")
-            return []
+            do {
+                // Fetch all thumbnails in the shared container
+                let fileURLs = try FileManager.default.contentsOfDirectory(at: containerURL, includingPropertiesForKeys: nil)
+                let thumbnails = fileURLs.filter { $0.lastPathComponent.hasPrefix("thumbnail_") }
+                
+                // Filter thumbnails that belong to the specified category
+                let categoryThumbnails = items.compactMap { item -> URL? in
+                    guard let contentData = item.content, // Ensure content is not nil
+                          let sharedContent = try? JSONDecoder().decode(SharedContent.self, from: contentData), // Decode content
+                          item.category == category else {
+                        return nil
+                    }
+                    
+                    // Handle different content cases
+                    switch sharedContent {
+                    case .imageURL(let imageURL), .url(let imageURL): // Handle both .imageURL and .url cases
+                        let thumbnailName = "thumbnail_" + imageURL.lastPathComponent
+                        return thumbnails.first(where: { $0.lastPathComponent == thumbnailName })
+                    default:
+                        return nil
+                    }
+                }
+                
+                return categoryThumbnails
+            } catch {
+                print("Failed to fetch thumbnails: \(error)")
+                return []
+            }
         }
-    }
-//    func fetchThumbnails() -> [URL] {
-//            guard let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.parthant.Stickers") else {
-//                print("Error accessing shared container")
-//                return []
-//            }
-//            do {
-//                let fileURLs = try FileManager.default.contentsOfDirectory(at: containerURL, includingPropertiesForKeys: nil)
-//                return fileURLs.filter { $0.lastPathComponent.hasPrefix("thumbnail_") } // Filter for thumbnails
-//            } catch {
-//                print("Failed to fetch thumbnails: \(error)")
-//                return []
-//            }
-//        }
 
         func getFullImageURL(for thumbnailURL: URL) -> URL? {
             let fileName = thumbnailURL.lastPathComponent.replacingOccurrences(of: "thumbnail_", with: "")
@@ -133,8 +127,46 @@ class SharedItemManager: ObservableObject {
         }
     
     func addCategory(_ category: String) {
-            // Add a new category if it doesn't already exist
             guard !categories.contains(category) else { return }
-            categories.append(category)
+            categories.append(category) // Updates the @Published property
+    }
+    
+    func deleteItem(_ item: SharedItem) {
+        guard let container = container else { return }
+        let context = container.mainContext
+        
+        context.delete(item)
+        
+        do {
+            try context.save()
+            fetchItems()
+        } catch {
+            print("Failed to delete item: \(error)")
         }
+    }
+    
+    func deleteImage(at url: URL) {
+        do {
+            try FileManager.default.removeItem(at: url)
+            
+            // Trigger UI update by re-fetching and updating items
+            DispatchQueue.main.async {
+                self.items = self.items.filter { item in
+                    guard let content = item.content,
+                          let sharedContent = try? JSONDecoder().decode(SharedContent.self, from: content) else {
+                        return true
+                    }
+                    
+                    switch sharedContent {
+                    case .imageURL(let imageURL), .url(let imageURL):
+                        return imageURL != url
+                    default:
+                        return true
+                    }
+                }
+            }
+        } catch {
+            print("Failed to delete image: \(error)")
+        }
+    }
 }

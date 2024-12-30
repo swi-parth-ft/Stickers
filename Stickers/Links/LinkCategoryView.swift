@@ -10,38 +10,37 @@ import SwiftUI
 struct LinkCategoryView: View {
     @StateObject private var manager = SharedItemManager()
     @Binding var selectedTab: Tab
-    
+    @State private var isAddingNewFolder = false
+    @State private var newFolderName: String = ""
+
     var body: some View {
         NavigationStack {
-           
-                List {
-                    ForEach(manager.categories, id: \.self) { cat in
-                        NavigationLink {
-                            LinksView(manager: manager, selectedTab: $selectedTab, cat: cat)
-                        } label: {
-                            Text(cat)
-                        }
+            List {
+                ForEach(manager.categories, id: \.self) { cat in
+                    NavigationLink {
+                        LinksView(manager: manager, selectedTab: $selectedTab, cat: cat)
+                    } label: {
+                        Text(cat)
                     }
                 }
-            
-            .onAppear {
-              
             }
-            .navigationTitle("Categories")
+            .navigationTitle("Links")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: addCategory) {
+                    Button {
+                        isAddingNewFolder.toggle()
+                    } label: {
                         Image(systemName: "plus")
                     }
                 }
             }
+            .sheet(isPresented: $isAddingNewFolder) {
+                AddFolderView(newFolderName: $newFolderName, onAdd: { folderName in
+                    manager.addCategory(folderName)
+                    isAddingNewFolder = false
+                })
+            }
         }
-    }
-    
-    private func addCategory() {
-        // Present an alert or sheet to add a new category
-        let newCategory = "New Category" // Replace with your logic to capture input
-        manager.addCategory(newCategory)
     }
 }
 
