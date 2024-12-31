@@ -11,12 +11,33 @@ struct CategoryListView: View {
     @StateObject private var manager = SharedItemManager()
     private let gridSize: CGFloat = 120 // Grid item size
     @Namespace private var transitionNamespace // Namespace for the zoom transition
+
+    @State private var categoryToDelete: String? // Tracks the category to delete
+    @State private var isShowingDeleteOptions = false // Show delete confirmation dialog
+    @State private var isShowingCategoryPicker = false // Show category picker dialog
+
     var body: some View {
         NavigationStack {
             ScrollView {
                 LazyVGrid(columns: createGridItems(for: gridSize), spacing: 20) {
                     ForEach(manager.categories, id: \.self) { category in
                         buildCategoryItem(for: category)
+                            .contextMenu {
+                                Menu {
+                                    Button("Move Items to Another Category") {
+                                        categoryToDelete = category
+                                        isShowingCategoryPicker = true
+                                    }
+                                    Button("Move Items to Uncategorized") {
+                                        manager.deleteCategory(category, withOption: .moveToUncategorized)
+                                    }
+                                    Button("Delete Items", role: .destructive) {
+                                        manager.deleteCategory(category, withOption: .deleteItems)
+                                    }
+                                } label: {
+                                    Label("Delete Category", systemImage: "trash")
+                                }
+                            }
                     }
                 }
                 .padding(16)
@@ -32,6 +53,17 @@ struct CategoryListView: View {
                     }
                 }
             }
+            .sheet(isPresented: $isShowingCategoryPicker) {
+                if let category = categoryToDelete {
+                    CategoryPickerView(
+                        categories: manager.categories.filter { $0 != category },
+                        onSelect: { targetCategory in
+                            manager.deleteCategory(category, withOption: .moveToCategory(targetCategory))
+                            isShowingCategoryPicker = false
+                        }
+                    )
+                }
+            }
         }
     }
 
@@ -42,7 +74,10 @@ struct CategoryListView: View {
     }
 
     private func buildCategoryItem(for category: String) -> some View {
-        NavigationLink { ImageGridView(selectedCategory: category).navigationTransition(.zoom(sourceID: category, in: transitionNamespace)) } label: {
+        NavigationLink {
+            ImageGridView(selectedCategory: category)
+                .navigationTransition(.zoom(sourceID: category, in: transitionNamespace))
+        } label: {
             VStack(spacing: 8) {
                 ZStack {
                     let thumbnails = Array(manager.fetchThumbnails(for: category).prefix(3))
@@ -53,19 +88,17 @@ struct CategoryListView: View {
                             .zIndex(3) // Ensure this is on top
                     }
 
-                    // Second Image: Rotated -45 degrees
+                    // Second Image: Rotated -15 degrees
                     if thumbnails.indices.contains(1) {
                         ImageThumbnailView(imageURL: thumbnails[1], gridSize: 100)
                             .rotationEffect(.degrees(-15))
-                          //  .offset(x: -8, y: -8) // Slight offset for better visibility
                             .zIndex(2)
                     }
 
-                    // Third Image: Rotated 45 degrees
+                    // Third Image: Rotated 15 degrees
                     if thumbnails.indices.contains(2) {
                         ImageThumbnailView(imageURL: thumbnails[2], gridSize: 100)
                             .rotationEffect(.degrees(15))
-                         //   .offset(x: 8, y: 8) // Slight offset for better visibility
                             .zIndex(1)
                     }
                 }
