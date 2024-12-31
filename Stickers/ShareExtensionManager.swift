@@ -169,4 +169,57 @@ class SharedItemManager: ObservableObject {
             print("Failed to delete image: \(error)")
         }
     }
+    
+    func updateCategory(for thumbnailURL: URL, to newCategory: String) {
+        guard let container = container else { return }
+        let context = container.mainContext
+
+        // Debug: Log the thumbnail URL being processed
+        print("Updating category for thumbnail URL:", thumbnailURL.absoluteString)
+
+        // Find the corresponding SharedItem
+        if let item = items.first(where: { item in
+            // Ensure content is not nil
+            guard let content = item.content else {
+                print("Item has no content")
+                return false
+            }
+
+            // Decode the content into SharedContent
+            guard let sharedContent = try? JSONDecoder().decode(SharedContent.self, from: content) else {
+                print("Failed to decode SharedContent for item:", item)
+                return false
+            }
+
+            // Match the thumbnail URL with the stored image URL
+            switch sharedContent {
+            case .imageURL(let imageURL), .url(let imageURL):
+                let expectedThumbnailName = "thumbnail_" + imageURL.lastPathComponent
+                let actualThumbnailName = thumbnailURL.lastPathComponent
+                
+                // Debug: Log the names being compared
+                print("Expected Thumbnail Name:", expectedThumbnailName)
+                print("Actual Thumbnail Name:", actualThumbnailName)
+                
+                return expectedThumbnailName == actualThumbnailName
+            default:
+                print("Unsupported content type")
+                return false
+            }
+        }) {
+            // Update the category
+            item.category = newCategory
+
+            // Save the changes to the context
+            do {
+                try context.save()
+                fetchItems() // Refresh the items
+                print("Category updated successfully to:", newCategory)
+            } catch {
+                print("Failed to update category:", error)
+            }
+        } else {
+            print("No matching item found for the thumbnail URL")
+        }
+    }
 }

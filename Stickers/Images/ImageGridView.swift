@@ -83,6 +83,19 @@ struct ImageGridView: View {
             ImageThumbnailView(imageURL: thumbnailURL, gridSize: gridSize)
                 .matchedTransitionSource(id: thumbnailURL, in: transitionNamespace)
                 .contextMenu {
+                    Menu {
+                                        ForEach(manager.categories, id: \.self) { category in
+                                            Button {
+                                                manager.updateCategory(for: thumbnailURL, to: category)
+                                                thumbnails = manager.fetchThumbnails(for: selectedCategory)
+                                            } label: {
+                                                Label(category, systemImage: "folder")
+                                            }
+                                        }
+                                    } label: {
+                                        Label("Move Category", systemImage: "arrow.right.square")
+                                    }
+                    Divider()
                                     Button(role: .destructive) {
                                         manager.deleteImage(at: thumbnailURL)
                                         thumbnails = manager.fetchThumbnails(for: selectedCategory)
