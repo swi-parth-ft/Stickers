@@ -222,4 +222,37 @@ class SharedItemManager: ObservableObject {
             print("No matching item found for the thumbnail URL")
         }
     }
+    
+    func updateCategoryforLinks(for url: URL, to newCategory: String) {
+        guard let container = container else { return }
+        let context = container.mainContext
+
+        // Find the corresponding SharedItem
+        if let item = items.first(where: { item in
+            guard let content = item.content,
+                  let sharedContent = try? JSONDecoder().decode(SharedContent.self, from: content) else {
+                return false
+            }
+
+            switch sharedContent {
+            case .url(let itemURL):
+                return itemURL == url
+            default:
+                return false
+            }
+        }) {
+            // Update the category
+            item.category = newCategory
+
+            // Save changes to the context
+            do {
+                try context.save()
+                fetchItems() // Refresh the items
+            } catch {
+                print("Failed to update category:", error)
+            }
+        } else {
+            print("No matching item found for the URL")
+        }
+    }
 }

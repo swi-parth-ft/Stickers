@@ -53,6 +53,18 @@ struct LinksView: View {
                         if let content = item.decodedContent(), case .url(let url) = content {
                             LinkPreviewView(url: url, caption: item.caption ?? "")
                                 .contextMenu {
+                                    Menu {
+                                        ForEach(manager.categories, id: \.self) { category in
+                                            Button {
+                                                manager.updateCategoryforLinks(for: url, to: category)
+                                            } label: {
+                                                Label(category, systemImage: "folder")
+                                            }
+                                        }
+                                    } label: {
+                                        Label("Move Category", systemImage: "arrow.right.square")
+                                    }
+                                    
                                     Button(role: .destructive) {
                                         manager.deleteItem(item)
                                     } label: {
