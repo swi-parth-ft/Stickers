@@ -6,23 +6,30 @@
 //
 
 import SwiftUI
+import VisionKit
+
+var isLiveTextSupported: Bool {
+    return ImageAnalyzer.isSupported
+}
+
+
+
 
 struct FullScreenImageView: View {
     let imageURLs: [URL]
     @State private var currentIndex: Int
-    @State private var isZoomed: Bool = false // State to toggle between zoomed and normal view
+    @State private var isZoomed: Bool = false
     let namespace: Namespace.ID
 
     init(imageURLs: [URL], selectedIndex: Int, namespace: Namespace.ID) {
         self.imageURLs = imageURLs
         self._currentIndex = State(initialValue: selectedIndex)
         self.namespace = namespace
-        configurePageControlAppearance() // Configure indicator appearance
+        configurePageControlAppearance()
     }
 
     var body: some View {
         ZStack {
-            // Background color changes based on zoom state
             (isZoomed ? Color.black : nil)
                 .ignoresSafeArea()
 
@@ -30,17 +37,14 @@ struct FullScreenImageView: View {
                 ForEach(imageURLs.indices, id: \.self) { index in
                     GeometryReader { geometry in
                         if let image = UIImage(contentsOfFile: imageURLs[index].path) {
-                            
-                            Image(uiImage: image)
-                                .resizable()
-                                .scaledToFit()
-                                .padding(isZoomed ? 0 : 20) // Add padding if not zoomed
-                                .frame(width: geometry.size.width, height: geometry.size.height)
+                            LiveTextImageView(image: image)
+                                .frame(maxWidth: .infinity, maxHeight: .infinity) // Ensure it takes full available space
                                 .cornerRadius(isZoomed ? 0 : 22)
                                 .shadow(radius: 10)
+                                .padding(isZoomed ? 0 : 7)
                                 .onTapGesture {
                                     withAnimation(.easeInOut) {
-                                        isZoomed.toggle() // Toggle zoom state
+                                        isZoomed.toggle()
                                     }
                                 }
                                 .matchedTransitionSource(id: imageURLs[index], in: namespace)
@@ -57,10 +61,9 @@ struct FullScreenImageView: View {
         }
     }
 
-    // Helper method to configure the appearance of page control indicators
     private func configurePageControlAppearance() {
         let appearance = UIPageControl.appearance()
-        appearance.currentPageIndicatorTintColor = .orange // Active indicator color
-        appearance.pageIndicatorTintColor = .gray         // Inactive indicator color
+        appearance.currentPageIndicatorTintColor = .orange
+        appearance.pageIndicatorTintColor = .gray
     }
 }
