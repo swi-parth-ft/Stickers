@@ -71,6 +71,9 @@ struct LinksView: View {
                 }
                 .padding(.horizontal, 8)
             }
+            .onAppear {
+                manager.fetchItems()
+            }
             .navigationTitle("\(selectedProvider) Links")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {

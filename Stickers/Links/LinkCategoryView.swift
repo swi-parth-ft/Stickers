@@ -40,6 +40,9 @@ struct LinkCategoryView: View {
                     isAddingNewFolder = false
                 })
             }
+            .onAppear {
+                manager.fetchItems()
+            }
         }
     }
 }

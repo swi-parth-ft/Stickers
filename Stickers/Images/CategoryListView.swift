@@ -21,6 +21,9 @@ struct CategoryListView: View {
                 }
                 .padding(16)
             }
+            .onAppear {
+                manager.fetchItems()
+            }
             .navigationTitle("Categories")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {

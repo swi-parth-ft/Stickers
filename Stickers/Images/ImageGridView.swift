@@ -58,6 +58,7 @@ struct ImageGridView: View {
             .navigationTitle("Saved Images")
             .onAppear {
                 thumbnails = manager.fetchThumbnails(for: selectedCategory)
+                manager.fetchItems()
             }
         }
     }

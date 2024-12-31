@@ -61,7 +61,7 @@ class SharedItemManager: ObservableObject {
         
         do {
             try context.save()
-          //  fetchItems()
+            fetchItems()
         } catch {
             print("Failed to save item: \(error)")
         }
