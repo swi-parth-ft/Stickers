@@ -1,4 +1,5 @@
 import SwiftData
+import UIKit
 import Foundation
 
 
@@ -253,6 +254,84 @@ class SharedItemManager: ObservableObject {
             }
         } else {
             print("No matching item found for the URL")
+        }
+    }
+    
+    func showCategoryPicker(for deletingCategory: String, from viewController: UIViewController) {
+        let alert = UIAlertController(title: "Select a Category",
+                                      message: "Choose a category to move items to:",
+                                      preferredStyle: .actionSheet)
+
+        for category in categories where category != deletingCategory {
+            alert.addAction(UIAlertAction(title: category, style: .default) { _ in
+                self.deleteCategory(deletingCategory, withOption: .moveToCategory(category))
+            })
+        }
+
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+
+        viewController.present(alert, animated: true, completion: nil)
+    }
+    
+    
+    func promptForCategoryDeletion(_ category: String, from viewController: UIViewController) {
+        let alert = UIAlertController(title: "Delete Category",
+                                      message: "What would you like to do with items in the '\(category)' category?",
+                                      preferredStyle: .actionSheet)
+
+        // Move to another category
+        alert.addAction(UIAlertAction(title: "Move to Another Category", style: .default) { _ in
+            self.showCategoryPicker(for: category, from: viewController)
+        })
+
+        // Move to Uncategorized
+        alert.addAction(UIAlertAction(title: "Move to Uncategorized", style: .default) { _ in
+            self.deleteCategory(category, withOption: .moveToUncategorized)
+        })
+
+        // Delete items
+        alert.addAction(UIAlertAction(title: "Delete Items", style: .destructive) { _ in
+            self.deleteCategory(category, withOption: .deleteItems)
+        })
+
+        // Cancel
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+
+        viewController.present(alert, animated: true, completion: nil)
+    }
+    
+    func deleteCategory(_ category: String, withOption option: CategoryDeletionOption) {
+        guard let container = container else { return }
+        let context = container.mainContext
+
+        // Filter items belonging to the category
+        let itemsToDelete = items.filter { $0.category == category }
+
+        switch option {
+        case .moveToCategory(let newCategory):
+            for item in itemsToDelete {
+                item.category = newCategory
+            }
+        case .moveToUncategorized:
+            for item in itemsToDelete {
+                item.category = "General"
+            }
+        case .deleteItems:
+            for item in itemsToDelete {
+                context.delete(item)
+            }
+        }
+
+        // Remove the category
+        categories.removeAll { $0 == category }
+
+        // Save changes
+        do {
+            try context.save()
+            saveCategoriesToUserDefaults()
+            fetchItems()
+        } catch {
+            print("Failed to delete category: \(error)")
         }
     }
 }

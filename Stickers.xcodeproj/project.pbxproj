@@ -40,13 +40,6 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		086599992D21CDA70030B12C /* Exceptions for "Share" folder in "Stickers" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				MobileNetV2.mlmodel,
-			);
-			target = 08CFDA302D0B07E4008AAEA1 /* Stickers */;
-		};
 		08CFDA522D0B0D55008AAEA1 /* Exceptions for "Share" folder in "Share" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -57,6 +50,7 @@
 		08CFDA5C2D0B196A008AAEA1 /* Exceptions for "Stickers" folder in "Share" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				CategoryDeletionOption.swift,
 				Model/SharedItem.swift,
 				ShareExtensionManager.swift,
 			);
@@ -76,7 +70,6 @@
 		08CFDA482D0B0D55008AAEA1 /* Share */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				086599992D21CDA70030B12C /* Exceptions for "Share" folder in "Stickers" target */,
 				08CFDA522D0B0D55008AAEA1 /* Exceptions for "Share" folder in "Share" target */,
 			);
 			path = Share;
