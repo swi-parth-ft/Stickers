@@ -10,7 +10,7 @@ struct ContentView: View {
             Group {
                 switch selectedTab {
                 case .home:
-                    HomeView()
+                    HomeView(manager: manager)
                 case .text:
                     SharedTextView(manager: manager, selectedTab: $selectedTab)
                 case .image:
@@ -40,9 +40,9 @@ struct ContentView: View {
             .padding()
             .padding(.bottom, 20)
             .background(
-                            RoundedRectangle(cornerRadius: 20) // TabBar background with rounded corners
+                            RoundedRectangle(cornerRadius: 40) // TabBar background with rounded corners
                                 .fill(Color.black)
-                                .shadow(color: .black.opacity(0.3), radius: 5, x: 0, y: -2)
+                                .shadow(color: .white.opacity(0.3), radius: 1, x: 0, y: -2)
                         )
              // Remove any default padding at the bottom
 

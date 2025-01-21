@@ -48,6 +48,7 @@ class SharedItemManager: ObservableObject {
         do {
             let descriptor = FetchDescriptor<SharedItem>()
             self.items = try context.fetch(descriptor)
+            print(items)
         } catch {
             print("Failed to fetch items: \(error)")
         }
