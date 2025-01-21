@@ -10,7 +10,7 @@ struct ContentView: View {
             Group {
                 switch selectedTab {
                 case .home:
-                    HomeView(manager: manager)
+                    HomeView(manager: manager).padding(.bottom, -20)
                 case .text:
                     SharedTextView(manager: manager, selectedTab: $selectedTab)
                 case .image:

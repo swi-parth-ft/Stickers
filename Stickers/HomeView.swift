@@ -22,7 +22,7 @@ struct HomeView: View {
                 
                 VStack {
                     NavigationLink {
-                        Text("yellow")
+                        FoldersView(manager: manager)
                     } label: {
                         HStack {
                             Image(systemName: "folder")
@@ -158,7 +158,7 @@ struct HomeView: View {
                                             .font(.title2)
                                             .foregroundColor(.gray) // Adjust color if needed
                                         
-                                        VStack {
+                                        VStack(alignment: .leading) {
                                             if let caption = item.caption {
                                                 Text(caption == "" ? "No caption" : caption)
                                                     .foregroundColor(.white)
@@ -187,7 +187,6 @@ struct HomeView: View {
                     }
                     .cornerRadius(22)
 
-                           // Sets a black background for the entire List
                     
                 }
                 
